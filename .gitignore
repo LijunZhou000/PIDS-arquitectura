@@ -1,0 +1,17 @@
+# Airflow logs
+airflow/logs/
+
+# Airflow dags cache (archivos .pyc)
+airflow/dags/__pycache__/
+
+# Plugins cache
+airflow/plugins/__pycache__/
+
+# Python cache en general
+__pycache__/
+*.pyc
+*.pyo
+
+# Volúmenes o datos temporales
+airflow/data/
+mlruns/
