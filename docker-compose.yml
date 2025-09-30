@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:4.0
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - mynet
+    volumes:
+      - mongo_data:/data/db
+  
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "8082:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    networks:
+      - mynet
+    depends_on:
+      - mongodb
+
+  spark:
+    build: ./spark
+    container_name: spark
+    depends_on:
+      - mongodb
+    volumes:
+      - ./data:/data
+      - ./app:/app
+    networks:
+      - mynet
+
+volumes:
+  mongo_data:
+
+networks:
+  mynet:
