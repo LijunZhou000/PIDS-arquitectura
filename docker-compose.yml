@@ -89,6 +89,17 @@ services:
       - mongodb
     networks:
       - mynet
+  spark:
+    build: ./spark
+    container_name: spark
+    depends_on:
+      - mongodb
+    volumes:
+      - ./data:/data
+      - ./app:/app
+    networks:
+      - mynet
+
 
 networks:
   mynet:

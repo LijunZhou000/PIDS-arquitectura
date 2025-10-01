@@ -40,7 +40,7 @@ if not mongo_client:
     raise Exception("❌ No se pudo conectar a Mongo después de varios intentos")
 
 db = mongo_client["taxis"]
-collection = db["trip"]
+collection = db["trips"]
 
 print("🚀 Esperando mensajes en Kafka...")
 
