@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  kafka:
+    image: bitnami/kafka:3.9.0
+    container_name: kafka
+    environment:
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_KRAFT_CLUSTER_ID=abcdefghij1234567890abcdefg
+    ports:
+      - 9092:9092
+    volumes:
+      - kafka_data:/bitnami/kafka
+    networks:
+      - mynet
+      
+      
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - 8083:8080
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local-kafka
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    networks:
+      - mynet
+    depends_on:
+      - kafka
+
+  init-kafka:
+    image: bitnami/kafka:3.9.0
+    depends_on:
+      - kafka
+    entrypoint: ["/bin/bash", "-c"]
+    command: >
+      "
+      echo 'Esperando que Kafka esté listo...' &&
+      while ! kafka-topics.sh --bootstrap-server kafka:9092 --list > /dev/null 2>&1; do sleep 2; done &&
+      kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic sim-taxi --partitions 1 --replication-factor 1
+      "
+    networks:
+      - mynet
+  
+  simulator:
+    build: ./sim
+    container_name: simulator
+    depends_on:
+      - kafka
+    networks:
+      - mynet
+
+networks:
+  mynet:
+
+volumes:
+  kafka_data:
