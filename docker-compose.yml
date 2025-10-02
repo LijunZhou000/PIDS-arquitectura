@@ -58,7 +58,7 @@ x-airflow-common:
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
-    _PIP_ADDITIONAL_REQUIREMENTS: 'mlflow==1.29.0 iso8601 pyspark findspark'
+    _PIP_ADDITIONAL_REQUIREMENTS: 'mlflow==1.29.0 iso8601 pyspark findspark pymongo psycopg2-binary'
     PROJECT_HOME: /app
   volumes:
     - ./airflow/dags:/opt/airflow/dags
@@ -90,6 +90,8 @@ services:
       interval: 5s
       retries: 5
     restart: always
+    networks:
+      - mynet
   
 
   redis:
@@ -102,6 +104,8 @@ services:
       timeout: 30s
       retries: 50
     restart: always
+    networks:
+      - mynet
 
   airflow-webserver:
     <<: *airflow-common
@@ -114,16 +118,22 @@ services:
       timeout: 10s
       retries: 5
     restart: always
+    networks:
+      - mynet
 
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
     restart: always
+    networks:
+      - mynet
 
   airflow-worker:
     <<: *airflow-common
     command: celery worker
     restart: always
+    networks:
+      - mynet
 
   airflow-init:
     <<: *airflow-common
@@ -134,6 +144,8 @@ services:
       _AIRFLOW_WWW_USER_CREATE: 'true'
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+    networks:
+      - mynet
 
   flower:
     <<: *airflow-common
@@ -146,6 +158,8 @@ services:
       timeout: 10s
       retries: 5
     restart: always
+    networks:
+      - mynet
 
   kafka:
     image: bitnami/kafka:3.9.0
