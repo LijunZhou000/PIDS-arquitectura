@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ollama
+    environment:
+      - DATABASE_URL=sqlite:///mobility.db
+      - OLLAMA_URL=http://ollama:11434
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nginx_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"  # Expose Ollama API port
+    volumes:
+      - ollama-data:/root/.ollama  # Use Docker volume to persist models
+    entrypoint: ["/bin/sh", "-c", "ollama serve"]
+    environment:
+      - OLLAMA_MODEL=gemma:2b
+
+volumes:
+  ollama-data:
+    driver: local

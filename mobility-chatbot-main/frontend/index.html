@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobility Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .message-box {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .input-area {
+            display: flex;
+            align-items: center;
+        }
+        .input-area textarea {
+            width: 100%;
+            height: 40px;
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            resize: none;
+        }
+        .input-area button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .input-area button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Mobility Chatbot</h1>
+    </div>
+    <div class="message-box" id="message-box">
+        <!-- Messages will appear here -->
+    </div>
+    <div class="input-area">
+        <textarea id="user-input" placeholder="Ask something about vehicle trips..."></textarea>
+        <button onclick="sendQuestion()">Ask</button>
+    </div>
+</div>
+
+<script>
+    async function sendQuestion() {
+        const question = document.getElementById('user-input').value;
+        if (!question) return;
+
+        // Show user's question
+        displayMessage('You', question);
+
+        // Send the question to the backend
+        try {
+            const response = await fetch('http://localhost:8000/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question })
+            });
+            const data = await response.json();
+
+            // Show the response from the chatbot
+            const chatbotResponse = data.response || 'Sorry, I could not find an answer.';
+            displayMessage('Bot', chatbotResponse);
+        } catch (error) {
+            console.error('Error:', error);
+            displayMessage('Bot', 'Sorry, something went wrong!');
+        }
+
+        // Clear the input field
+        document.getElementById('user-input').value = '';
+    }
+
+    function displayMessage(sender, message) {
+        const messageBox = document.getElementById('message-box');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+        messageBox.appendChild(messageElement);
+        messageBox.scrollTop = messageBox.scrollHeight;  // Auto scroll to the bottom
+    }
+</script>
+
+</body>
+</html>

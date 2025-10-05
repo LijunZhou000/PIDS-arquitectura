@@ -17,3 +17,56 @@ airflow/data/
 mlruns/
 
 data/rows.csv
+# --- Python básico
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+*.log
+
+# --- Entornos
+# tu entorno actual:
+chat-env/
+# convenciones comunes:
+.venv/
+venv/
+ENV/
+env/
+
+# --- Herramientas / build
+dist/
+build/
+*.wheel
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+.ruff_cache/
+.pyre/
+.dmypy.json
+
+# --- Editores/OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- FastAPI/Docs
+site/
+staticfiles/
+# si generas OpenAPI docs en archivo:
+openapi*.json
+
+# --- Datos locales / credenciales
+.env
+.env.*
+*.db
+*.sqlite3
+
+# --- Jupyter (si lo usas)
+.ipynb_checkpoints/
