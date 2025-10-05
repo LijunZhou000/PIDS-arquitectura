@@ -259,6 +259,46 @@ services:
       - ./app:/app
     networks:
       - mynet
+  
+  backend:
+    build:
+      context: mobility-chatbot-main
+      dockerfile: Dockerfile
+    container_name: fastapi_backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ollama
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - OLLAMA_URL=http://ollama:11434
+    networks:
+      - mynet
+  frontend:
+    build:
+      context: mobility-chatbot-main/frontend
+      dockerfile: Dockerfile
+    container_name: nginx_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - mynet
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"  # Expose Ollama API port
+    volumes:
+      - ollama-data:/root/.ollama  # Use Docker volume to persist models
+    entrypoint: ["/bin/sh", "-c", "ollama serve"]
+    environment:
+      - OLLAMA_MODEL=gemma:2b
+    networks:
+      - mynet
 
 
 networks:
@@ -268,3 +308,4 @@ volumes:
   kafka_data:
   mongo_data:
   postgres-db-volume:
+  ollama-data:

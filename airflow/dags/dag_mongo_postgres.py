@@ -54,8 +54,7 @@ def transfer_data():
     conn = psycopg2.connect(**PG_CONN)
     cur = conn.cursor()
 
-    docs = collection.find({})
-    for doc in docs:
+    for doc in collection.find({}):
         cur.execute("""
             INSERT INTO trips (
                 mongo_id, VendorID, tpep_pickup_datetime, tpep_dropoff_datetime,
@@ -64,7 +63,10 @@ def transfer_data():
                 mta_tax, tip_amount, tolls_amount, improvement_surcharge,
                 congestion_surcharge, total_amount
             ) VALUES (
-                %(mongo_id)s, %(VendorID)s, %(tpep_pickup_datetime)s, %(tpep_dropoff_datetime)s,
+                %(mongo_id)s,
+                %(VendorID)s,
+                to_timestamp(%(tpep_pickup_datetime)s, 'MM/DD/YYYY HH12:MI:SS AM'),
+                to_timestamp(%(tpep_dropoff_datetime)s, 'MM/DD/YYYY HH12:MI:SS AM'),
                 %(passenger_count)s, %(trip_distance)s, %(RatecodeID)s, %(store_and_fwd_flag)s,
                 %(PULocationID)s, %(DOLocationID)s, %(payment_type)s, %(fare_amount)s, %(extra)s,
                 %(mta_tax)s, %(tip_amount)s, %(tolls_amount)s, %(improvement_surcharge)s,
@@ -74,8 +76,8 @@ def transfer_data():
         """, {
             "mongo_id": str(doc["_id"]),
             "VendorID": doc.get("VendorID"),
-            "tpep_pickup_datetime": doc.get("tpep_pickup_datetime"),
-            "tpep_dropoff_datetime": doc.get("tpep_dropoff_datetime"),
+            "tpep_pickup_datetime": doc.get("tpep_pickup_datetime"),   # string "MM/DD/YYYY hh:mm:ss AM/PM"
+            "tpep_dropoff_datetime": doc.get("tpep_dropoff_datetime"), # string "MM/DD/YYYY hh:mm:ss AM/PM"
             "passenger_count": doc.get("passenger_count"),
             "trip_distance": doc.get("trip_distance"),
             "RatecodeID": doc.get("RatecodeID"),
