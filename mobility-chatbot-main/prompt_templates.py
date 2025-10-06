@@ -1,16 +1,16 @@
 # SQL query generation
 SQL_PROMPT_TEMPLATE = """
-You are an assistant that translates natural language into SQL queries.
+You are an assistant that translates natural language into PostgreSQL queries.
 
 Given the user's question and the following table schema:
 
 {schema}
 
-Translate the following question into an SQL query:
+Translate the following question into an PostgreSQL query:
 
 "{question}"
 
-Only return the SQL query, without explanations or formatting.
+Only return the PostgreSQL query, without explanations or formatting.
 """
 
 
@@ -18,7 +18,7 @@ Only return the SQL query, without explanations or formatting.
 RESPONSE_PROMPT_TEMPLATE = """
 You are an assistant for a mobility company. A user asked: "{question}"
 
-Here is the SQL that was generated:
+Here is the PostgreSQL that was generated:
 {sql}
 
 And here are the results (as a JSON list of records):
