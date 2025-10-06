@@ -7,6 +7,7 @@ from prompt_templates import SQL_PROMPT_TEMPLATE, RESPONSE_PROMPT_TEMPLATE
 
 from sqlalchemy import create_engine
 import json
+from decimal import Decimal
 
 # engine = create_engine("sqlite:///mobility.db")
 
@@ -28,7 +29,7 @@ app.add_middleware(
 
 TABLE_SCHEMA = """
 Table: trips
-- id (serial)
+- id (serial, unique trip id)
 - mongo_id (varchar)
 - VendorID (int)
 - tpep_pickup_datetime (timestamp)
@@ -40,17 +41,25 @@ Table: trips
 - PULocationID (int)
 - DOLocationID (int)
 - payment_type (int)
-- fare_amount (float)
-- extra (float)
-- mta_tax (float)
-- tip_amount (float)
-- tolls_amount (float)
-- improvement_surcharge (float)
-- congestion_surcharge (float)
-- total_amount (float)
+- fare_amount (float, base fare estimated by taximeter)
+- extra (float, additional standard fees like night surcharge and rush hour surcharge)
+- mta_tax (float, fixed tax charged by the Metropolitan Transportation Authority)
+- tip_amount (float, tip given to the driver)
+- tolls_amount (float, total cost of tolls during the trip)
+- improvement_surcharge (float, fixed fee added to yellow taxi trips)
+- congestion_surcharge (float, fee introduced to reduce traffic by yellow taxis)
+- total_amount (float, total amount paid by the passenger)
 """
 
-
+def convert_decimals(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    elif isinstance(obj, list):
+        return [convert_decimals(i) for i in obj]
+    elif isinstance(obj, dict):
+        return {k: convert_decimals(v) for k, v in obj.items()}
+    else:
+        return obj
 
 # Favicon route (optional)
 @app.get("/favicon.ico")
@@ -84,6 +93,7 @@ async def query_nl(request: Request):
         return {"error": str(e), "sql": sql_query}
 
     # Step 3: Generate natural language answer
+    results = convert_decimals(results)
     results_json = json.dumps(results, indent=2)
     response_prompt = RESPONSE_PROMPT_TEMPLATE.format(
         question=user_question,
