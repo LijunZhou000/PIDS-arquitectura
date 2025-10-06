@@ -94,7 +94,7 @@ async def query_nl(request: Request):
 
     # Step 3: Generate natural language answer
     results = convert_decimals(results)
-    results_json = json.dumps(results, indent=2)
+    results_json = json.dumps(results, indent=2, default=str)
     response_prompt = RESPONSE_PROMPT_TEMPLATE.format(
         question=user_question,
         sql=sql_query,
