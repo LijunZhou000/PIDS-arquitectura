@@ -38,5 +38,5 @@ Here is the PostgreSQL that was generated:
 And here are the results (as a JSON list of records):
 {results}
 
-Write a clear, concise, and helpful answer that summarizes the results for an executive.
+Write a clear, concise, and helpful answer that summarizes the results obtained for an executive.
 """
