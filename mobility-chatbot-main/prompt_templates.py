@@ -11,6 +11,20 @@ Translate the following question into an PostgreSQL query:
 "{question}"
 
 Only return the PostgreSQL query, without explanations or formatting.
+
+The columns tpep_pickup_datetime and tpep_dropoff_datetime are TIMESTAMP (date + time).
+Only use DATE(), EXTRACT(), or DATE_PART() when the question explicitly mentions a specific date, day, month, or year.
+If the question does not mention time or date filters, do NOT filter by date or time.
+
+Examples:
+-- specific date:
+WHERE DATE(tpep_pickup_datetime) = '2020-01-01';
+
+-- specific month/year:
+WHERE EXTRACT(MONTH FROM tpep_pickup_datetime) = 1 AND EXTRACT(YEAR FROM tpep_pickup_datetime) = 2020;
+
+-- no date mentioned:
+SELECT COUNT(*) FROM trips;
 """
 
 

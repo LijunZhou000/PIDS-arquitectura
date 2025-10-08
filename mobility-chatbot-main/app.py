@@ -32,8 +32,8 @@ Table: trips
 - id (serial, unique trip id)
 - mongo_id (varchar)
 - VendorID (int)
-- tpep_pickup_datetime (timestamp)
-- tpep_dropoff_datetime (timestamp)
+- tpep_pickup_datetime (timestamp) (this is the format 2019-12-18 00:00:00)
+- tpep_dropoff_datetime (timestamp) (this is the format 2019-12-18 00:00:00)
 - passenger_count (int)
 - trip_distance (float)
 - RatecodeID (int)
@@ -87,10 +87,20 @@ async def query_nl(request: Request):
     print(f"[DEBUG] Generated SQL: {sql_query}")
 
     # Step 2: Run SQL
-    try:
-        results = run_sql_query(sql_query)
-    except Exception as e:
-        return {"error": str(e), "sql": sql_query}
+    def is_safe_sql(sql_query: str) -> bool:
+        forbidden = ["drop", "delete", "update", "alter", "insert"]
+        sql_lower = sql_query.lower().strip()
+        if not sql_lower.startswith(("select", "with")):
+            return False
+        return not any(word in sql_lower for word in forbidden)
+
+    if is_safe_sql(sql_query):
+        try:
+            results = run_sql_query(sql_query)
+        except Exception as e:
+            return {"error": str(e), "sql": sql_query}
+    else:
+        results = {"results":"La consulta solicitada no se considera segura."}
 
     # Step 3: Generate natural language answer
     results = convert_decimals(results)

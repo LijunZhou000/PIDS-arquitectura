@@ -30,7 +30,15 @@ def wait_for_kafka(broker, topic, timeout=60):
 
 
 def generar_trip():
-    start_time = datetime.now()
+    # Rango de fechas
+    start = datetime(2010, 1, 1)
+    end = datetime(2020, 12, 31)
+    
+    # Generar número aleatorio de segundos entre las dos fechas
+    random_seconds = random.randint(0, int((end - start).total_seconds()))
+    
+    # Crear la fecha aleatoria
+    start_time = start + timedelta(seconds=random_seconds)
     end_time = start_time + timedelta(minutes=random.randint(1, 30))
 
     trip = {

@@ -294,9 +294,11 @@ services:
       - "11434:11434"  # Expose Ollama API port
     volumes:
       - ollama-data:/root/.ollama  # Use Docker volume to persist models
-    entrypoint: ["/bin/sh", "-c", "ollama serve & sleep 5 && ollama pull gemma:2b && tail -f /dev/null"]
+    # entrypoint: ["/bin/sh", "-c", "ollama serve & sleep 5 && ollama pull gemma:2b && tail -f /dev/null"]
+    entrypoint: ["/bin/sh", "-c", "ollama serve & sleep 5 && ollama pull qwen2.5:3b && tail -f /dev/null"]
     environment:
-      - OLLAMA_MODEL=gemma:2b
+      # - OLLAMA_MODEL=gemma:2b
+      - OLLAMA_MODEL=qwen2.5:3b
     networks:
       - mynet
 
