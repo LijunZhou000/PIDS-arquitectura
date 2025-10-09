@@ -163,7 +163,7 @@ services:
       - mynet
 
   kafka:
-    image: bitnami/kafka:3.9.0
+    image: bitnamilegacy/kafka:3.9.0
     container_name: kafka
     environment:
       - KAFKA_CFG_NODE_ID=1
@@ -196,7 +196,7 @@ services:
       - kafka
 
   init-kafka:
-    image: bitnami/kafka:3.9.0
+    image: bitnamilegacy/kafka:3.9.0
     depends_on:
       - kafka
     entrypoint: ["/bin/bash", "-c"]
