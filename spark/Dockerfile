@@ -1,5 +1,5 @@
 # Usa la imagen oficial de Bitnami Spark
-FROM bitnami/spark:3.5.3
+FROM bitnamilegacy/spark:3.5.3
 
 # Ejecuta como root para poder copiar y añadir archivos
 USER root
